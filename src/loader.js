@@ -15,7 +15,9 @@ export default function loader(src) {
     Promise.resolve(String(src))
       .then(optimize(loaderOpts.svgo))
       .then(transform({ jsx: false }))
-      .then(({ code }) => babel.transform(code))
+      .then(({ code }) => babel.transform(code, {
+        presets: ['es2015'],
+      }))
       .then(result => cb(null, result.code))
       .catch(err => cb(err));
   }
