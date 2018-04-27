@@ -20,7 +20,7 @@ export default function loader(src) {
       }))
       .then(result => cb(null, result.code))
       .catch(err => cb(err));
+  } else {
+    return fallback.call(rewriteQuery(this, ['limit']), src);
   }
-
-  return fallback.call(rewriteQuery(this, ['limit']), src);
 }
