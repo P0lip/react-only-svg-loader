@@ -1,6 +1,6 @@
 import { optimize } from 'react-svg-core';
 import * as babel from 'babel-core';
-import { getOptions, parseQuery } from 'loader-utils';
+import { getOptions } from 'loader-utils';
 import fallback from 'url-loader';
 import { rewriteQuery } from './utils';
 
@@ -8,9 +8,9 @@ export default async function (src) {
   const {
     minification,
   } = getOptions(this);
-  const {
-    inline,
-  } = parseQuery(this.resourceQuery);
+
+  // todo: parse query
+  const inline = this.resourceQuery.includes('inline');
 
   const cb = this.async();
   try {
