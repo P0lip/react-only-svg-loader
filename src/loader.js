@@ -14,11 +14,11 @@ export default async function (src) {
 
   const cb = this.async();
   try {
-    const svg = await optimize(minification)(String(src));
+    const svg = String(src);
     if (inline) {
       cb(
         null,
-        babel.transform(svg, {
+        babel.transform(await optimize(minification)(svg), {
           presets: ['es2015', 'react'],
           plugins: ['syntax-jsx', 'transform-object-rest-spread', 'babel-plugin-react-svg'],
         }).code,
