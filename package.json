@@ -24,8 +24,12 @@
     "type": "git",
     "url": "git+https://github.com/P0lip/react-only-svg-loader.git"
   },
+  "scripts": {
+    "build": "rollup -c rollup.config.js"
+  },
   "dependencies": {
     "babel-core": "^6.26.0",
+    "babel-plugin-react-svg": "^2.1.0",
     "babel-preset-es2015": "^6.24.1",
     "loader-utils": "^1.1.0",
     "react-svg-core": "^2.1.0",

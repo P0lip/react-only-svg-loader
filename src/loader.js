@@ -1,26 +1,32 @@
-import { optimize, transform } from 'react-svg-core';
+import { optimize } from 'react-svg-core';
 import * as babel from 'babel-core';
-import { getOptions } from 'loader-utils';
+import { getOptions, parseQuery } from 'loader-utils';
 import fallback from 'url-loader';
 import { rewriteQuery } from './utils';
 
-export default function loader(src) {
-  // eslint-disable-next-line no-underscore-dangle
-  const issuer = this._module.issuer.userRequest;
-  if (/\.jsx?$/.test(issuer)) {
-    const cb = this.async();
-    const loaderOpts = getOptions(this);
+export default async function (src) {
+  const {
+    minification,
+  } = getOptions(this);
+  const {
+    inline,
+  } = parseQuery(this.resourceQuery);
 
-    // based on https://github.com/boopathi/react-svg-loader/blob/master/packages/react-svg-core/src/index.js
-    Promise.resolve(String(src))
-      .then(optimize(loaderOpts.svgo))
-      .then(transform({ jsx: false }))
-      .then(({ code }) => babel.transform(code, {
-        presets: ['es2015'],
-      }))
-      .then(result => cb(null, result.code))
-      .catch(err => cb(err));
-  } else {
-    return fallback.call(rewriteQuery(this, ['limit']), src);
+  const cb = this.async();
+  try {
+    const svg = await optimize(minification)(String(src));
+    if (inline) {
+      cb(
+        null,
+        babel.transform(svg, {
+          presets: ['es2015', 'react'],
+          plugins: ['syntax-jsx', 'transform-object-rest-spread', 'babel-plugin-react-svg'],
+        }).code,
+      );
+    } else {
+      cb(null, fallback.call(rewriteQuery(this, ['limit']), svg));
+    }
+  } catch (err) {
+    cb(err);
   }
 }
